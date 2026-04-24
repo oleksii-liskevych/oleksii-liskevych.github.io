@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oleksii Liskevych — Health Data Analyst</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --surface: #111827;
+      --border: #1e2d40;
+      --accent: #2dd4bf;
+      --accent2: #6ee7b7;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --white: #f8fafc;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(10,15,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(45,212,191,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,212,191,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(45,212,191,0.08) 0%, transparent 70%);
+      top: 10%;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 750px;
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+
+    .hero-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.4s;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 500px;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.6s;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.8s;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 500;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 6rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white);
+      margin-bottom: 3rem;
+    }
+
+    /* ABOUT */
+    #about {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      max-width: 1100px;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+
+    .about-text p strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .stat-card:hover { border-color: var(--accent); }
+
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* SKILLS */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: all 0.25s;
+    }
+
+    .skill-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .skill-icon {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .skill-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .skill-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      background: rgba(45,212,191,0.08);
+      border: 1px solid rgba(45,212,191,0.2);
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      letter-spacing: 0.08em;
+    }
+
+    /* PROJECTS */
+    #projects {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+    }
+
+    .project-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.25s;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .project-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .project-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .project-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      background: rgba(100,116,139,0.1);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+    }
+
+    .project-status.live {
+      color: var(--accent);
+      background: rgba(45,212,191,0.08);
+      border-color: rgba(45,212,191,0.2);
+    }
+
+    .project-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--white);
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      flex-grow: 1;
+    }
+
+    .project-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: gap 0.2s;
+    }
+
+    .project-link:hover { gap: 0.7rem; }
+
+    /* CONTACT */
+    .contact-inner {
+      max-width: 600px;
+    }
+
+    .contact-inner p {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .contact-item:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .contact-item-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      min-width: 80px;
+    }
+
+    .contact-item-value {
+      font-size: 0.95rem;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* DIVIDER */
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      margin-bottom: 2rem;
+      opacity: 0.6;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">OL // Health Data</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <p class="hero-tag">// Medical Doctor · Epidemiologist · Data Analyst</p>
+      <h1 class="hero-name">Oleksii<br/><em>Liskevych</em></h1>
+      <p class="hero-subtitle">Turning public health data into actionable insights. MD + epidemiology background with hands-on experience in R, Python, and spatiotemporal modeling.</p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">View Projects →</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">// About</p>
+        <h2 class="section-title">MD meets<br/><em>Data Science</em></h2>
+        <div class="divider"></div>
+        <p>I'm a Medical Doctor and current <strong>Resident in Epidemiology & Public Health</strong> at INSP Romania, with a focus on disease surveillance and public health analytics.</p>
+        <p>My work sits at the intersection of <strong>clinical medicine and data</strong> — I build analytical pipelines, models, and dashboards that help make sense of complex epidemiological data.</p>
+        <p>Previously at <strong>UMFCD Bucharest</strong>, where I developed strong foundations in biostatistics, research methodology, and evidence-based medicine.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-number">6+</div>
+          <div class="stat-label">Years in Medicine</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Languages</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">R · Py</div>
+          <div class="stat-label">Primary Stack</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">INSP</div>
+          <div class="stat-label">Current Institution</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <p class="section-label">// Skills</p>
+    <h2 class="section-title">Technical <em>Capabilities</em></h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">📊</div>
+        <div class="skill-name">Data Analysis & Statistics</div>
+        <div class="skill-desc">Applied biostatistics, epidemiological modeling, regression analysis, and spatiotemporal methods.</div>
+        <div class="skill-tags">
+          <span class="tag">R</span>
+          <span class="tag">Python</span>
+          <span class="tag">SPSS</span>
+          <span class="tag">Epi Info</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🗄️</div>
+        <div class="skill-name">Data Management</div>
+        <div class="skill-desc">Collecting, cleaning, validating, and structuring medical and public health datasets for analysis.</div>
+        <div class="skill-tags">
+          <span class="tag">SQL</span>
+          <span class="tag">Excel</span>
+          <span class="tag">pandas</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🗺️</div>
+        <div class="skill-name">Spatial Epidemiology</div>
+        <div class="skill-desc">Geographic analysis and visualization of disease patterns, outbreak mapping, and county-level surveillance.</div>
+        <div class="skill-tags">
+          <span class="tag">sf</span>
+          <span class="tag">tmap</span>
+          <span class="tag">spdep</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📡</div>
+        <div class="skill-name">Disease Surveillance</div>
+        <div class="skill-desc">Epidemiological surveillance systems, outbreak investigation, and public health monitoring and reporting.</div>
+        <div class="skill-tags">
+          <span class="tag">INSP</span>
+          <span class="tag">Surveillance</span>
+          <span class="tag">Reporting</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📈</div>
+        <div class="skill-name">Visualization & Dashboards</div>
+        <div class="skill-desc">Interactive dashboards and clear data storytelling for public health audiences and decision-makers.</div>
+        <div class="skill-tags">
+          <span class="tag">ggplot2</span>
+          <span class="tag">Shiny</span>
+          <span class="tag">Power BI</span>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🔬</div>
+        <div class="skill-name">Research & Evidence</div>
+        <div class="skill-desc">Systematic literature reviews, report preparation, and evidence-based public health research methodology.</div>
+        <div class="skill-tags">
+          <span class="tag">PubMed</span>
+          <span class="tag">Research</span>
+          <span class="tag">Reports</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <p class="section-label">// Projects</p>
+    <h2 class="section-title">Featured <em>Work</em></h2>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-top">
+          <span class="project-number">01</span>
+          <span class="project-status live">Live</span>
+        </div>
+        <div class="project-title">COVID-19 Romania Dashboard</div>
+        <div class="project-desc">Interactive dashboard tracking 3.5M cases, 68K deaths, vaccination rollout, ICU capacity, and government stringency index across the full 2020–2023 pandemic period.</div>
+        <div class="skill-tags">
+          <span class="tag">R Shiny</span>
+          <span class="tag">plotly</span>
+          <span class="tag">OWID Data</span>
+        </div>
+        <a href="https://oleksiiliskevych.shinyapps.io/covid_dashboard/" target="_blank" class="project-link">View Live Dashboard →</a>
+      <div class="project-card">
+        <div class="project-top">
+          <span class="project-number">02</span>
+          <span class="project-status">In Progress</span>
+        </div>
+        <div class="project-title">Spatiotemporal Disease Modeling</div>
+        <div class="project-desc">County-level spatiotemporal analysis of infectious disease incidence in Romania, integrating vaccination coverage and socioeconomic indicators.</div>
+        <div class="skill-tags">
+          <span class="tag">R</span>
+          <span class="tag">spdep</span>
+          <span class="tag">Spatial Stats</span>
+        </div>
+        <a href="#" class="project-link">View on GitHub →</a>
+      </div>
+      <div class="project-card">
+        <div class="project-top">
+          <span class="project-number">03</span>
+          <span class="project-status">Coming Soon</span>
+        </div>
+        <div class="project-title">Public Health Data Pipeline</div>
+        <div class="project-desc">Automated data extraction, cleaning, and analysis pipeline for Romanian public health reports — turning PDF reports into structured, analyzable datasets.</div>
+        <div class="skill-tags">
+          <span class="tag">Python</span>
+          <span class="tag">pandas</span>
+          <span class="tag">SQL</span>
+        </div>
+        <a href="#" class="project-link">View on GitHub →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="section-label">// Contact</p>
+    <h2 class="section-title">Let's <em>Connect</em></h2>
+    <div class="contact-inner">
+      <p>Open to opportunities in health data analytics, epidemiology research, and public health consulting. Feel free to reach out.</p>
+      <div class="contact-links">
+        <a href="mailto:alexliscevici@gmail.com" class="contact-item">
+          <span class="contact-item-label">Email</span>
+          <span class="contact-item-value">alexliscevici@gmail.com</span>
+        </a>
+        <a href="https://www.linkedin.com/in/alexei-liskevych-86340321a/" target="_blank" class="contact-item">
+          <span class="contact-item-label">LinkedIn</span>
+          <span class="contact-item-value">linkedin.com/in/alexei-liskevych</span>
+        </a>
+        <a href="https://github.com/oleksii-liskevych" target="_blank" class="contact-item">
+          <span class="contact-item-label">GitHub</span>
+          <span class="contact-item-value">github.com/oleksii-liskevych</span>
+        </a>
+        <a href="#" class="contact-item">
+          <span class="contact-item-label">Location</span>
+          <span class="contact-item-value">Bucharest, Romania</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Oleksii Liskevych</p>
+    <p>Health Data Analyst · MD · Epidemiologist</p>
+  </footer>
+
+</body>
+</html>
